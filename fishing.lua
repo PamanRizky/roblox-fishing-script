@@ -1,4 +1,4 @@
--- Auto Fishing Script (Stop Langsung + ON/OFF + Slider Strike)
+-- Auto Fishing Script V3
 -- By Rizky
 
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -18,7 +18,8 @@ local Window = Rayfield:CreateWindow({
 
 -- state toggle & settings
 local autoFishing = false
-local strikeClicks = 35 -- default
+local strikeClicks = 35 -- default jumlah klik strike
+local strikeWait = 10   -- default waktu tunggu strike (detik)
 
 -- helper: key press
 local function pressKey(key, holdTime)
@@ -47,7 +48,7 @@ Tab:CreateToggle({
     end,
 })
 
--- Slider Strike
+-- Slider Strike Klik
 Tab:CreateSlider({
     Name = "Jumlah Strike Klik",
     Range = {10, 100}, -- bisa diatur min 10x, max 100x
@@ -57,6 +58,19 @@ Tab:CreateSlider({
     Flag = "StrikeClicksSlider",
     Callback = function(Value)
         strikeClicks = Value
+    end,
+})
+
+-- Slider Waktu Tunggu Strike
+Tab:CreateSlider({
+    Name = "Waktu Tunggu Strike",
+    Range = {5, 30}, -- bisa diatur 5s - 30s
+    Increment = 1,
+    Suffix = " detik",
+    CurrentValue = strikeWait,
+    Flag = "StrikeWaitSlider",
+    Callback = function(Value)
+        strikeWait = Value
     end,
 })
 
@@ -75,8 +89,8 @@ task.spawn(function()
             clickMouse(Enum.UserInputType.MouseButton1, 1)
             task.wait(0.5)
 
-            -- 3. tunggu strike 10 detik
-            for i = 1, 100 do -- 100x 0.1s = 10 detik
+            -- 3. tunggu strike (default 10 detik, bisa diatur)
+            for i = 1, strikeWait * 10 do -- dikali 10 karena 0.1s loop
                 if not autoFishing then break end
                 task.wait(0.1)
             end
